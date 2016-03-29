@@ -28,8 +28,13 @@ module.exports = function ( npmPrefix, options, port, autoclose, callback ) {
   }
 
   request( "http://localhost:" + port, function ( error, httpResponse ) {
-    if ( httpResponse ) {
-      console.log( "Detected a meteor instance on port " + port );
+    if ( httpResponse || options.env) {
+
+      if (httpResponse) {
+        console.log( "Detected a meteor instance on port " + port );
+      } else {
+        console.log( "Using meteor environment " + options.env );
+      }
 
       console.log( "Launching nightwatch bridge..." );
 
@@ -173,9 +178,10 @@ module.exports = function ( npmPrefix, options, port, autoclose, callback ) {
         }
       } );
     }
-    if ( error ) {
+    if ( error && !options.env ) {
       console.log( "No app is running on http://localhost:" + port +
-        ".  Try launching an app with 'meteor run." );
+        " OR you have not specified a meteor environment (--env <name>). Try launching an app with 'meteor run'" + 
+        " OR please specify an environment using the '--env' flag.");
       console.error( error );
       nightwatchExitCode = 2;
       //TODO: exit with error that will halt travis
